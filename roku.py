@@ -18,27 +18,30 @@ if __name__ == "__main__":
     DEFAULT_LISTEN_PORTS = os.environ['HOST_PORT']
     MQTT_HOST = os.environ['MQTT_HOST']
     MQTT_PORT = os.environ['MQTT_PORT']
+    MQTT_USERNAME = os.getenv('MQTT_USERNAME',None)
+    MQTT_PASSWORD = os.getenv('MQTT_PASSWORD',None)
     
     DEFAULT_UPNP_BIND_MULTICAST = True
 
     class MQTTRokuCommandHandler(emulated_roku.RokuCommandHandler):
         """Emulated Roku command handler."""
-        def publish(self, event, usn, message):
-            topic = 'roku/'+event
-            publish.single(topic, message, hostname = MQTT_HOST, port = int(MQTT_PORT))
+        def publish(self, event, usn, message, ip):
+            topic = 'roku-'+ip+'/'+event
+            publish.single(topic, message, hostname = MQTT_HOST, auth={'username':MQTT_USERNAME, 'password':MQTT_PASSWORD}, port = int(MQTT_PORT))
 
-        def on_keydown(self, roku_usn, key):
-            self.publish('keydown', roku_usn, key)
+        def on_keydown(self, roku_usn, key, ip):
+            self.publish('keydown', roku_usn, key, ip)
             
-        def on_keyup(self, roku_usn, key):
-            self.publish('keyup', roku_usn, key)
+        def on_keyup(self, roku_usn, key, ip):
+            self.publish('keyup', roku_usn, key, ip)
 
-        def on_keypress(self, roku_usn, key):
+        def on_keypress(self, roku_usn, key, ip):
+            print(ip)
             print(roku_usn)
-            self.publish('keypress', roku_usn, key)
+            self.publish('keypress', roku_usn, key, ip)
 
-        def launch(self, roku_usn, app_id):
-            self.publish('app', roku_usn, app_id)
+        def launch(self, roku_usn, app_id, ip):
+            self.publish('app', roku_usn, app_id, ip)
 
 
 

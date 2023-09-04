@@ -303,26 +303,30 @@ def make_roku_api(loop, handler,
 
     @asyncio.coroutine
     def roku_keydown_handler(request):
+        ip = request.remote
         key = request.match_info['key']
-        handler.on_keydown(roku_usn, key)
+        handler.on_keydown(roku_usn, key, ip)
         return web.Response()
 
     @asyncio.coroutine
     def roku_keyup_handler(request):
+        ip = request.remote
         key = request.match_info['key']
-        handler.on_keyup(roku_usn, key)
+        handler.on_keyup(roku_usn, key, ip)
         return web.Response()
 
     @asyncio.coroutine
     def roku_keypress_handler(request):
+        ip = request.remote
         key = request.match_info['key']
-        handler.on_keypress(roku_usn, key)
+        handler.on_keypress(roku_usn, key, ip)
         return web.Response()
 
     @asyncio.coroutine
     def roku_launch_handler(request):
+        ip = request.remote
         app_id = request.match_info['id']
-        handler.launch(roku_usn, app_id)
+        handler.launch(roku_usn, app_id, ip)
         return web.Response()
 
     @asyncio.coroutine
